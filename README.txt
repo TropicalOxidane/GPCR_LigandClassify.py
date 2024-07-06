@@ -1,0 +1,1 @@
+Go to: https://zhanggroup.org/GLASS/, and download the interactions_active.tsv, ligands.tsv, and targets.tsv files. 
