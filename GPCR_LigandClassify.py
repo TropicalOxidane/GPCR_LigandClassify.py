@@ -17,7 +17,7 @@ from sklearn.multioutput import MultiOutputClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import accuracy_score
 import joblib
-import tsne as TSNE
+from openTSNE import TSNE
 import matplotlib as plt
 from matplotlib import axis
 from mpl_toolkits.mplot3d import Axes3D
@@ -27,6 +27,7 @@ from rdkit.Chem.Draw import SimilarityMaps
 """Adopted protocol for ligand/receptor filtering,
     data cleaning and pre-preprocessing
 """
+
 
 # Define functions for merging and processing TSV files
 def merge_tsv_files(ligands, interactions_active, targets, output_file):
@@ -120,6 +121,7 @@ print(final_df_with_activity.head())
 
 """Molecular featurization using the DeepChem library
 """
+
 
 # Function to calculate molecular fingerprints
 def calculate_fingerprints(smiles):
@@ -239,7 +241,7 @@ data_with_predictions = predict_targets(data, loaded_model, scaler, mlb)
 output_prediction_file = "ligands_with_predicted_gpcr.tsv"
 data_with_predictions.to_csv(output_prediction_file, sep="\t", index=False)
 print(f"Predicted GPCR targets and saved the result to {output_prediction_file}")
- 
+
 # Combine the training and testing data
 combined_data = np.vstack((X_train, X_test))
 
@@ -248,14 +250,30 @@ tsne = TSNE(n_components=3, random_state=42)
 tsne_results = tsne.fit_transform(combined_data)
 
 # Split the tSNE results back into training and testing data
-tsne_train = tsne_results[:len(X_train)]
-tsne_test = tsne_results[len(X_train):]
+tsne_train = tsne_results[: len(X_train)]
+tsne_test = tsne_results[len(X_train) :]
 
 # Plotting the results in 3D
 fig = plt.figure(figsize=(10, 7))
-ax = fig.add_subplot(111, projection='3d')
-ax.scatter(tsne_test[:,0], tsne_test[:,1], tsne_test[:,2], subset='blue', label='test', edgecolor='k', alpha=0.7)
-ax.scatter(tsne_train[:,0], tsne_train[:,1], tsne_train[:,2], subset='red', label='train', edgecolor='k', alpha=0.7)
+ax = fig.add_subplot(111, projection="3d")
+ax.scatter(
+    tsne_test[:, 0],
+    tsne_test[:, 1],
+    tsne_test[:, 2],
+    subset="blue",
+    label="test",
+    edgecolor="k",
+    alpha=0.7,
+)
+ax.scatter(
+    tsne_train[:, 0],
+    tsne_train[:, 1],
+    tsne_train[:, 2],
+    subset="red",
+    label="train",
+    edgecolor="k",
+    alpha=0.7,
+)
 ax.set_title("3D tSNE Visualization of Molecular Fingerprints")
 ax.axes.set_xlim3d(left=-30, right=30)
 ax.axes.set_ylim3d(left=-30, right=30)
@@ -263,29 +281,38 @@ ax.axes.set_zlim3d(left=-30, right=30)
 ax.set_xlabel("tSNE-1")
 ax.set_ylabel("tSNE-2")
 ax.set_zlabel("tSNE-3")
-ax.legend(loc='best')
+ax.legend(loc="best")
 plt.show()
 
-# Columns set one 
-Columns_set_one = ['XlogP', 'MolecularWeight']
+# Columns set one
+Columns_set_one = ["XlogP", "MolecularWeight"]
 
 # loading dataset
-df_for_set_one = pd.read_csv(output_prediction_file, sep='\t', skipinitialspace=True, usecols=Columns_set_one)
+df_for_set_one = pd.read_csv(
+    output_prediction_file, sep="\t", skipinitialspace=True, usecols=Columns_set_one
+)
 data = sns.load_dataset(df_for_set_one)
 
 # draw jointplot with
 # kde kind
-sns.jointplot(x = df_for_set_one.XlogP, y = df_for_set_one.MolecularWeight,
-              kind = "kde", data = data)
+sns.jointplot(
+    x=df_for_set_one.XlogP, y=df_for_set_one.MolecularWeight, kind="kde", data=data
+)
 
 # Show the plot
 plt.show()
 
 # Columns set two
-Columns_set_two = ['SMILES', 'LigandName']
+Columns_set_two = ["SMILES", "LigandName"]
 
 # loading dataset
-df_for_set_two = pd.read_csv(output_prediction_file, sep='\t', skipinitialspace=True, usecols=Columns_set_two, index_col=0)
+df_for_set_two = pd.read_csv(
+    output_prediction_file,
+    sep="\t",
+    skipinitialspace=True,
+    usecols=Columns_set_two,
+    index_col=0,
+)
 print(df_for_set_two.head())
 
 
@@ -293,7 +320,7 @@ print(df_for_set_two.head())
 # Creating molecules and storing in an array
 molecules = []
 
-for _, smiles in df_for_set_two[['SMILES']].itertuples():
+for _, smiles in df_for_set_two[["SMILES"]].itertuples():
     molecules.append((Chem.MolFromSmiles(smiles)))
 molecules[:15]
 
@@ -304,51 +331,80 @@ fgrps = [calculate_fingerprints.GetFingerprint(mol) for mol in molecules]
 nfgrps = len(fgrps)
 print("Number of fingerprints:", nfgrps)
 
+
 # Defining a function to calculate similarities among the molecules
 def pairwise_similarity(fingerprints_list):
-    
+
     global similarities
-    
+
     similarities = np.zeros(nfgrps, nfgrps)
-    
+
     for i in range(1, nfgrps):
         similarity = DataStructs.BulkTanimotoSimilarity(fgrps[i], fgrps[:i])
         similarities[i, :i] = similarity
         similarities[:i, i] = similarity
-        
+
     return similarities
+
 
 # Calculating similarities of molecules
 pairwise_similarity(fgrps)
 tri_lower_diag = np.tril(similarities, k=0)
 
 # Visualizing the similarities
-labels = ['lig1','lig2','lig3','lig4','lig5','lig6','lig7', 'lig8', 'lig9', 'lig10', 'lig11', 'lig12', 'lig13', 'lig14', 'lig15']
+labels = [
+    "lig1",
+    "lig2",
+    "lig3",
+    "lig4",
+    "lig5",
+    "lig6",
+    "lig7",
+    "lig8",
+    "lig9",
+    "lig10",
+    "lig11",
+    "lig12",
+    "lig13",
+    "lig14",
+    "lig15",
+]
 
-def normal_heatmap (sim):
-    
+
+def normal_heatmap(sim):
+
     # writing similarities to a file
     f = open("similarities.txt", "w")
     print(similarities, file=f)
-    
+
     sns.set(font_scale=0.8)
-    
+
     # generating the plot
-    
-    plot = sns.heatmap(sim[:15,:15], annot = True, annot_kws={"fontsize":5}, center=0,
-                       square=True, xticklabels=labels, yticklabels=labels, linewidth=.7, cbar_kws={"shrink": .5})
-    
-    plt.title('Heatmap of Tanimoto Similarities', fontsize = 20) 
-    
+
+    plot = sns.heatmap(
+        sim[:15, :15],
+        annot=True,
+        annot_kws={"fontsize": 5},
+        center=0,
+        square=True,
+        xticklabels=labels,
+        yticklabels=labels,
+        linewidth=0.7,
+        cbar_kws={"shrink": 0.5},
+    )
+
+    plt.title("Heatmap of Tanimoto Similarities", fontsize=20)
+
     plt.show()
-    
+
     # saving the plot
-    
+
     fig = plot.get_figure()
     fig.savefig("tanimoto_heatmap.png")
-    
-    
+
+
 normal_heatmap(similarities)
+
 
 # Function to predict activity of new ligands
 def predict_activity(smiles, model, scaler, label_encoder):
@@ -359,27 +415,30 @@ def predict_activity(smiles, model, scaler, label_encoder):
     predicted_class = label_encoder.inverse_transform([prediction.argmax()])
     return predicted_class[0]
 
+
 # Example usage
 new_smiles = input("New smiles: ")
 print("New smiles: " + new_smiles)
 activity = predict_activity(new_smiles, scaler, mlb)
-print(f'The predicted activity of the ligand is: {activity}')
+print(f"The predicted activity of the ligand is: {activity}")
 
-output_file = r'C:\Users\gavjo\.spyder-py3\output_file.tsv'
+output_file = r"C:\Users\gavjo\.spyder-py3\output_file.tsv"
+
 
 def filter_tsv(output_file_with_activity, filter_column, filter_values):
     # Read the TSV file into a Dataframe
-    df = pd.read_csv(output_file_with_activity, sep='\t')
-    
-    # Filter the Dataframe based on the given criteria 
+    df = pd.read_csv(output_file_with_activity, sep="\t")
+
+    # Filter the Dataframe based on the given criteria
     filtered_df = df[df[filter_column].isin(filter_values)]
-    
+
     # Write the filtered Datafrmae to a new TSV file
-    filtered_df.to_csv(output_file, sep='\t', index=False)
+    filtered_df.to_csv(output_file, sep="\t", index=False)
     print(f"filtered data saved to {output_file}")
-    
-filter_column = 'GPCRTarget'
-filter_values = ['ADCY8', 'ADTRP', 'CACNA2D3', 'CADPS2', 'CDH20', 'CDH8']
+
+
+filter_column = "GPCRTarget"
+filter_values = ["ADCY8", "ADTRP", "CACNA2D3", "CADPS2", "CDH20", "CDH8"]
 
 # Print to output that the code's finished
 print(f"finished: {activity}, {output_file}")
