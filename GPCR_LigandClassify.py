@@ -21,7 +21,6 @@ from openTSNE import TSNE
 import matplotlib as plt
 from matplotlib import axis
 from mpl_toolkits.mplot3d import Axes3D
-import seaborn as sns
 from rdkit.Chem.Draw import SimilarityMaps
 
 """Adopted protocol for ligand/receptor filtering,
