@@ -12,3 +12,11 @@
 * Scikitlearn (For MLPClassifier)
 * Seaborn (For jointplot of XlogP and Molecular Weight)
 * TSNE (For visualization of high-dimensional data)
+
+# Autodock simulation after the DNN prediction
+
+** Dopamine D3 Autodock structure example **
+
+![Alt text](file:///C:/Users/gavjo/OneDrive/Pictures/Screenshots/Screenshot%20(30).png)
+
+* Tutorial for Autodock Vina: https://vina.scripps.edu/tutorial/ 
