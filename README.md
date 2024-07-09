@@ -17,6 +17,6 @@
 
 ** Dopamine D3 Autodock structure example **
 
-![Alt text](file:///C:/Users/gavjo/OneDrive/Pictures/Screenshots/Screenshot%20(30).png)
+![Alt text](D3_example.png)
 
 * Tutorial for Autodock Vina: https://vina.scripps.edu/tutorial/ 
