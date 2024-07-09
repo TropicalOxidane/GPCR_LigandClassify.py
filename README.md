@@ -20,3 +20,4 @@
 ![Alt text](D3_example.png)
 
 * Tutorial for Autodock Vina: https://vina.scripps.edu/tutorial/ 
+* After you've watched the tutorial, input the SMILES from your ligand of choice into the MolFromSMILES_pdb.py file. After having done so, It'll then output a .pdb file; this file will act as the ligand in the Autodock simulation. 
