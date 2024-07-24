@@ -1,7 +1,8 @@
+# -*- coding: utf-8 -*-
 """
-Created on Thu July  11 15:03:11 2024
+Created on Wed Jul 24 17:31:02 2024
 
-@author: gavin
+@author: gavjo
 """
 
 import time
