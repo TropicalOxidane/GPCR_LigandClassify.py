@@ -1,11 +1,18 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Jul 24 17:31:02 2024
+
+@author: gavjo
+"""
+
 import requests 
 import rdkit
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
 # SMILES string for compound 
-SMILES = input("")
-pdb_id = input("")
+SMILES = input("SMILES: ")
+pdb_id = input("pdb_id: ")
 
 # Add explicit hydrogens, and generate molecule from SMILES
 mol = Chem.MolFromSmiles(SMILES)
