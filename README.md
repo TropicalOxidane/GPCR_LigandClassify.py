@@ -24,4 +24,5 @@
 * After you've dealt with the ligand, you're ready to setup the Protein docking structure. The way in which you go about doing this is by inputting the pdb_id into the Ligand_and_Docking.py file; after having done so, It should save a file named in accordance with the pdb_id. 
 
 ** Example usage video ** 
+
 [![Watch the video](https://img.youtube.com/vi/uZVWAX8F8qI/maxresdefault.jpg)](https://www.youtube.com/watch?v=uZVWAX8F8qI)
